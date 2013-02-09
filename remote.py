@@ -6,7 +6,7 @@ if(len(sys.argv) == 3) :
     maxcount = int(sys.argv[2])
 ser.flushInput  # blow away whatever is in the input buffer
 
-speed = 10 # the speed we want to tell the robot to go
+speed = 15 # the speed we want to tell the robot to go
 
 count = 0
 while( count < maxcount) :
@@ -16,7 +16,7 @@ while( count < maxcount) :
     #print tokens
     if( count == 10 ) :
         # set PID tunings
-        tunings = "K 8.0 0.0 0.0 "   # P I and D
+        tunings = "K 5.0 0.75 0.01 "   # P I and D
         print( "-> " + tunings)
         ser.write( tunings)
     if( tokens[0] == 'LE' ) :
