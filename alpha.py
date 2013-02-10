@@ -9,7 +9,7 @@ from robot_util import *
 from robot_math import *
 
 serialPort = sys.argv[1]
-wheelbase = 16  # centimeters
+wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks 
 
 serialObj = SetupComm()
 
