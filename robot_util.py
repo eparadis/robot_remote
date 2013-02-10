@@ -6,7 +6,7 @@ def SetupComm( ) :
     ser.flushInput  # blow away whatever is in the input buffer
     # snarf junk data until we're getting good stuff
     count = 0
-    while count < 10 :
+    while count < 6 :
         line = ser.readline().rstrip()
         data = ParseStatusMessage(line)
         print data

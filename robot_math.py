@@ -23,7 +23,8 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
         bearing = bearing - 360.0
     elif bearing < -180 :
         bearing = bearing + 360.0
-    turnRequired = bearing - heading
+    print "bearing: " + str(bearing)
+    turnRequired = bearing - curHeading
     if( turnRequired < 0) :
         return (-10.0, 10.0)
     elif( turnRequired > 0) :
@@ -32,6 +33,12 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
         return (0.0, 0.0)
 
 def CalcPosAccumulator( prev, curr, acc) :
-    return ( curr[0] - prev[0] + acc[0], curr[1] - prev[1] + acc[1], curr[2] - prev[2] + acc[2] )
+    heading = curr[2] - prev[2] + acc[2] 
+    if( heading < -180.0) :
+        heading = heading + 360.0
+    if( heading > 180.0) :
+        heading = heading - 360.0
+    return ( curr[0] - prev[0] + acc[0], curr[1] - prev[1] + acc[1], heading )
 
-
+def Distance( pos, waypoint) :
+    return math.sqrt( math.pow((pos[0]-waypoint[0]),2) + math.pow(pos[1]-waypoint[1],2))

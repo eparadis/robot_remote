@@ -10,6 +10,7 @@ from robot_math import *
 
 serialPort = sys.argv[1]
 wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks 
+waypoint = (50, 50) 
 
 print "doing setup..."
 serialObj = SetupComm()
@@ -24,7 +25,8 @@ while True :
     prevDeltaPos = deltaPos 
     deltaPos = CalcPosition( data['left_enc'], data['right_enc'], wheelbase)
     posAcc = CalcPosAccumulator( prevDeltaPos, deltaPos, posAcc)
-    print posAcc
-
+    print "position " + str(posAcc)
+    print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
+    print "distance " + str(Distance( (posAcc[0],posAcc[1]), waypoint))
 
 
