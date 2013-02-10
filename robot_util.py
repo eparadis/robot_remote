@@ -35,5 +35,7 @@ def CreateMotorSpeedMessage( left, right ) :
     # again, don't forget the trailing space 
     return "M " + str(left) + " " + str(right) + " "
 
-
+def CreateEncoderZeroMessage() :
+    """return a string suitable for sending to the robot"""
+    return "Z "
 
