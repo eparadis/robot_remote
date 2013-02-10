@@ -13,6 +13,7 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
+serialObj.write( CreatePIDTuningsMessage( 10.0, 4.0, 0.01))
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
 enc = (0,0)
@@ -79,6 +80,20 @@ while True:
             if event.key == K_z:
                 serialObj.write( CreateEncoderZeroMessage() )
                 lineQueue.clear()
+            if event.key == K_UP :
+                serialObj.write( CreateMotorSpeedMessage( 10, 10))
+            if event.key == K_DOWN :
+                serialObj.write( CreateMotorSpeedMessage( -10, -10))
+            if event.key == K_RIGHT :
+                serialObj.write( CreateMotorSpeedMessage( 10, -10))
+            if event.key == K_LEFT :
+                serialObj.write( CreateMotorSpeedMessage( -10, 10))
+            if event.key == K_SPACE :
+                serialObj.write( CreateMotorSpeedMessage( 0, 0))
+
+
+
+
 
     pygame.display.update() # draw everything
     #fpsClock.tick(30)   # regulate to 30 fps
