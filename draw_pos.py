@@ -7,7 +7,8 @@ from robot_util import *
 from robot_math import *
 
 serialPort = sys.argv[1]
-wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks 
+#wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks, flat slick wheels 
+wheelbase = 95.0 * 162.5 / 170.0  # in encoder ticks, knobby round wheels
 waypoint = (50, 50)
 
 print "doing setup..."
@@ -25,7 +26,7 @@ pygame.display.set_caption( 'Robot Remote Data Visualizer' )
 redColor = pygame.Color(255,0,0)
 whiteColor = pygame.Color(255,255,255)
 blackColor = pygame.Color(0,0,0)
-fontObj = pygame.font.Font('freesansbold.ttf', 16)
+fontObj = pygame.font.SysFont('arial', 16)
 msg = "no message yet"
 lineQueue = deque()
 
@@ -42,6 +43,7 @@ while True:
     print "position " + str(posAcc)
     print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     print "distance " + str(Distance( (posAcc[0],posAcc[1]), waypoint))   
+    msg = "X:{0:.2f}  Y:{1:.2f}  R:{2:.2f}deg".format(*posAcc)
 
     # store the position (if its new)
     if deltaPos[0] != 0 or deltaPos[1] != 0 :
