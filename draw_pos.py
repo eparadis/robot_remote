@@ -36,7 +36,8 @@ while True:
     print "{0} {1}".format(data['left_enc'], data['right_enc'])
     prevEnc = enc
     enc = (data['left_enc'], data['right_enc'])
-    deltaPos = CalcPosition( enc[0]-prevEnc[0], enc[1]-prevEnc[1], wheelbase)
+    print ( enc[0]-prevEnc[0], enc[1]-prevEnc[1])
+    deltaPos = CalcPosition( enc[0]-prevEnc[0], enc[1]-prevEnc[1], wheelbase, posAcc[2])
     posAcc = CalcPosAccumulator( deltaPos, posAcc)
     print "position " + str(posAcc)
     print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
