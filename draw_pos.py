@@ -12,9 +12,10 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
-prevDeltaPos = (0,0,0)
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
+enc = (0,0)
+prevEnc = (0,0)
 
 # setup the visualization stuff
 pygame.init()
@@ -33,9 +34,10 @@ while True:
     # grab data from the robot
     data = ParseStatusMessage( serialObj.readline())
     print "{0} {1}".format(data['left_enc'], data['right_enc'])
-    prevDeltaPos = deltaPos
-    deltaPos = CalcPosition( data['left_enc'], data['right_enc'], wheelbase)
-    posAcc = CalcPosAccumulator( prevDeltaPos, deltaPos, posAcc)
+    prevEnc = enc
+    enc = (data['left_enc'], data['right_enc'])
+    deltaPos = CalcPosition( enc[0]-prevEnc[0], enc[1]-prevEnc[1], wheelbase)
+    posAcc = CalcPosAccumulator( deltaPos, posAcc)
     print "position " + str(posAcc)
     print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     print "distance " + str(Distance( (posAcc[0],posAcc[1]), waypoint))   
@@ -60,7 +62,7 @@ while True:
     A = (0,0)
     for q in lineQueue :
         B = (q[0],q[1]) 
-        pygame.draw.line( windowSurfaceObj, redColor, (A[0]+320,A[1]+240), (B[0]+320,B[1]+240), 2)
+        pygame.draw.line( windowSurfaceObj, redColor, (A[0]+320,240-A[1]), (B[0]+320,240-B[1]), 2)
         A = B
 
     ### handle events 
@@ -69,7 +71,7 @@ while True:
             pygame.quit()
             sys.exit()
         elif event.type == KEYDOWN :
-            if event.key == K_ESCAPE:
+            if event.key == K_ESCAPE or event.key == K_q:
                 pygame.event.post( pygame.event.Event(QUIT))
             if event.key == K_z:
                 serialObj.write( CreateEncoderZeroMessage() )

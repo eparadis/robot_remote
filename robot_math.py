@@ -10,7 +10,6 @@ def CalcPosition( left_enc, right_enc, wheel_base ) :
     headingDeg = math.degrees(theta)
     xPos = distance * math.sin(theta)   # note unusual sin/cos usage
     yPos = distance * math.cos(theta)
-
     return (xPos, yPos, headingDeg)
 
 def TurnTowardsPoint( curPos, curHeading, targetPos ) :
@@ -32,13 +31,13 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
     else :
         return (0.0, 0.0)
 
-def CalcPosAccumulator( prev, curr, acc) :
-    heading = curr[2] - prev[2] + acc[2] 
+def CalcPosAccumulator( curr, acc) :
+    heading = curr[2] + acc[2] 
     if( heading < -180.0) :
         heading = heading + 360.0
     if( heading > 180.0) :
         heading = heading - 360.0
-    return ( curr[0] - prev[0] + acc[0], curr[1] - prev[1] + acc[1], heading )
+    return ( curr[0] + acc[0], curr[1] + acc[1], heading )
 
 def Distance( pos, waypoint) :
     return math.sqrt( math.pow((pos[0]-waypoint[0]),2) + math.pow(pos[1]-waypoint[1],2))
