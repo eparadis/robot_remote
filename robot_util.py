@@ -25,7 +25,7 @@ def ParseStatusMessage( line ) :
         return dataDict
     return {}
 
-def CreatePIDTuningsMessage( Kp, Ki, Kd) :
+def CreatePIDTuningsMessage( (Kp, Ki, Kd) ) :
     """return a string suitable for sending to the robot"""
     # the trailing space is SUUUUPER important! (it tells the robot that we're done >_>
     return "K " + str(Kp) + " " + str(Ki) + " " + str(Kd) + " "

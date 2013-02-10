@@ -5,6 +5,7 @@ from collections import deque
 # setup the robot stuff
 from robot_util import *
 from robot_math import *
+from renderlines import *   # a nice way to render multiline text off the pygame font docs comments
 
 serialPort = sys.argv[1]
 #wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks, flat slick wheels 
@@ -13,7 +14,8 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
-serialObj.write( CreatePIDTuningsMessage( 10.0, 4.0, 0.01))
+kPID = (10.0, 4.0, 0.01)
+serialObj.write( CreatePIDTuningsMessage(kPID ))
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
 enc = (0,0)
@@ -35,16 +37,17 @@ lineQueue = deque()
 while True:
     # grab data from the robot
     data = ParseStatusMessage( serialObj.readline())
-    print "{0} {1}".format(data['left_enc'], data['right_enc'])
+    print "enc {0} {1}".format(data['left_enc'], data['right_enc'])
     prevEnc = enc
     enc = (data['left_enc'], data['right_enc'])
-    print ( enc[0]-prevEnc[0], enc[1]-prevEnc[1])
+    print "deltaEnc ", ( enc[0]-prevEnc[0], enc[1]-prevEnc[1])
     deltaPos = CalcPosition( enc[0]-prevEnc[0], enc[1]-prevEnc[1], wheelbase, posAcc[2])
     posAcc = CalcPosAccumulator( deltaPos, posAcc)
     print "position " + str(posAcc)
     print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     print "distance " + str(Distance( (posAcc[0],posAcc[1]), waypoint))   
-    msg = "X:{0:.2f}  Y:{1:.2f}  R:{2:.2f}deg".format(*posAcc)
+    posMsg = "X:{0:.2f}  Y:{1:.2f}  R:{2:.2f}deg".format(*posAcc)
+    pidMsg = "Kp:{0:.2f}  Ki:{1:.2f}  Kd:{2:.2f}".format(*kPID)
 
     # store the position (if its new)
     if deltaPos[0] != 0 or deltaPos[1] != 0 :
@@ -57,7 +60,8 @@ while True:
     windowSurfaceObj.fill( blackColor)
 
     # draw the text message
-    msgSurfaceObj = fontObj.render( msg, False, whiteColor)
+    msgSurfaceObj = renderLines( [posMsg, "second line"], fontObj, False, whiteColor)
+    #msgSurfaceObj = fontObj.render( msg, False, whiteColor)
     msgRectObj = msgSurfaceObj.get_rect()
     msgRectObj.topleft = (10,20)
     windowSurfaceObj.blit( msgSurfaceObj, msgRectObj)
