@@ -14,7 +14,7 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
-kPID = (10.0, 4.0, 0.01)
+kPID = (14.0, 7.0, 0.02)
 serialObj.write( CreatePIDTuningsMessage(kPID ))
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
@@ -60,10 +60,10 @@ while True:
     windowSurfaceObj.fill( blackColor)
 
     # draw the text message
-    msgSurfaceObj = renderLines( [posMsg, "second line"], fontObj, False, whiteColor)
+    msgSurfaceObj = renderLines( [posMsg, pidMsg], fontObj, False, whiteColor)
     #msgSurfaceObj = fontObj.render( msg, False, whiteColor)
     msgRectObj = msgSurfaceObj.get_rect()
-    msgRectObj.topleft = (10,20)
+    msgRectObj.topleft = (10,10)
     windowSurfaceObj.blit( msgSurfaceObj, msgRectObj)
 
     # draw all the lines
@@ -79,7 +79,7 @@ while True:
             pygame.quit()
             sys.exit()
         elif event.type == KEYDOWN :
-            if event.key == K_ESCAPE or event.key == K_q:
+            if event.key == K_ESCAPE:
                 pygame.event.post( pygame.event.Event(QUIT))
             if event.key == K_z:
                 serialObj.write( CreateEncoderZeroMessage() )
@@ -94,6 +94,29 @@ while True:
                 serialObj.write( CreateMotorSpeedMessage( -10, 10))
             if event.key == K_SPACE :
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
+
+            if event.key == K_w :
+                kPID = (kPID[0]+0.1, kPID[1], kPID[2])
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+            if event.key == K_s :
+                kPID = (kPID[0]-0.1, kPID[1], kPID[2])
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+            if event.key == K_e :
+                kPID = (kPID[0], kPID[1]+0.1, kPID[2])
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+            if event.key == K_d :
+                kPID = (kPID[0], kPID[1]-0.1, kPID[2])
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+            if event.key == K_r :
+                kPID = (kPID[0], kPID[1], kPID[2]+0.01)
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+            if event.key == K_f :
+                kPID = (kPID[0], kPID[1], kPID[2]-0.01)
+                serialObj.write( CreatePIDTuningsMessage(kPID) )
+
+
+
+
 
 
 
