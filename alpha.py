@@ -11,23 +11,20 @@ from robot_math import *
 serialPort = sys.argv[1]
 wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks 
 
+print "doing setup..."
 serialObj = SetupComm()
+prevDeltaPos = (0,0,0)
+deltaPos = (0,0,0)
+posAcc = (0,0,0)
 
-def Setup() :
-    print "doing setup..."
-        
-
-def Loop() :
-    print "inside loop"
-    data = ParseStatusMessage( serialObj.readline())
-    print CalcPosition( data['left_enc'], data['right_enc'], wheelbase)
-
-
-
-# execution starts here
-Setup()
-
+print "inside loop"
 while True :
-    Loop()
+    data = ParseStatusMessage( serialObj.readline())
+    print "{0} {1}".format(data['left_enc'], data['right_enc']) 
+    prevDeltaPos = deltaPos 
+    deltaPos = CalcPosition( data['left_enc'], data['right_enc'], wheelbase)
+    posAcc = CalcPosAccumulator( prevDeltaPos, deltaPos, posAcc)
+    print posAcc
+
 
 

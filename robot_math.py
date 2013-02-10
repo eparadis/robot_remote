@@ -31,5 +31,7 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
     else :
         return (0.0, 0.0)
 
+def CalcPosAccumulator( prev, curr, acc) :
+    return ( curr[0] - prev[0] + acc[0], curr[1] - prev[1] + acc[1], curr[2] - prev[2] + acc[2] )
 
 
