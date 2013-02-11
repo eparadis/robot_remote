@@ -76,6 +76,7 @@ while True:
     ### handle events 
     for event in pygame.event.get() :
         if event.type == QUIT:
+            print "SHUTTING DOWN..."
             pygame.quit()
             sys.exit()
         elif event.type == KEYDOWN :
@@ -84,6 +85,7 @@ while True:
             if event.key == K_z:
                 serialObj.write( CreateEncoderZeroMessage() )
                 lineQueue.clear()
+                posAcc = (0,0,0)
             if event.key == K_UP :
                 serialObj.write( CreateMotorSpeedMessage( 10, 10))
             if event.key == K_DOWN :
