@@ -14,7 +14,7 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
-kPID = (14.0, 7.0, 0.02)
+kPID = (7.0, 64.0, 0.25)
 serialObj.write( CreatePIDTuningsMessage(kPID ))
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
@@ -98,16 +98,16 @@ while True:
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
 
             if event.key == K_w :
-                kPID = (kPID[0]+0.1, kPID[1], kPID[2])
+                kPID = (kPID[0]+1.0, kPID[1], kPID[2])
                 serialObj.write( CreatePIDTuningsMessage(kPID) )
             if event.key == K_s :
-                kPID = (kPID[0]-0.1, kPID[1], kPID[2])
+                kPID = (kPID[0]-1.0, kPID[1], kPID[2])
                 serialObj.write( CreatePIDTuningsMessage(kPID) )
             if event.key == K_e :
-                kPID = (kPID[0], kPID[1]+0.1, kPID[2])
+                kPID = (kPID[0], kPID[1]+1.0, kPID[2])
                 serialObj.write( CreatePIDTuningsMessage(kPID) )
             if event.key == K_d :
-                kPID = (kPID[0], kPID[1]-0.1, kPID[2])
+                kPID = (kPID[0], kPID[1]-1.0, kPID[2])
                 serialObj.write( CreatePIDTuningsMessage(kPID) )
             if event.key == K_r :
                 kPID = (kPID[0], kPID[1], kPID[2]+0.01)
