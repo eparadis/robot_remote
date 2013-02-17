@@ -22,11 +22,15 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
         bearing = bearing - 360.0
     elif bearing < -180 :
         bearing = bearing + 360.0
-    print "bearing: " + str(bearing)
     turnRequired = bearing - curHeading
-    if( turnRequired < 0) :
+    if turnRequired > 180.0 :
+        turnRequired = turnRequired - 360.0
+    if turnRequired < -180.0 :
+        turnRequired = turnRequired + 360.0
+    print "bearing: ", bearing, "turnReq: ", turnRequired
+    if( turnRequired < 5) :
         return (-10.0, 10.0)
-    elif( turnRequired > 0) :
+    elif( turnRequired > 5) :
         return (10.0, -10.0)
     else :
         return (0.0, 0.0)
