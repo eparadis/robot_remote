@@ -14,7 +14,7 @@ waypoint = (50, 50)
 
 print "doing setup..."
 serialObj = SetupComm()
-kPID = (7.0, 64.0, 0.25)
+kPID = (7.0, 64.0, 0.18)
 serialObj.write( CreatePIDTuningsMessage(kPID ))
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
