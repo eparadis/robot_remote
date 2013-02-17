@@ -10,7 +10,7 @@ from renderlines import *   # a nice way to render multiline text off the pygame
 serialPort = sys.argv[1]
 #wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks, flat slick wheels 
 wheelbase = 95.0 * 162.5 / 170.0  # in encoder ticks, knobby round wheels
-squareSize = 1000
+squareSize = 800
 wayPoints = [(0, squareSize), (squareSize, squareSize), (squareSize, 0), (0,0)]
 wayPoints.reverse() # we pop() the waypoints off, so reverse the order
 wp = wayPoints.pop()
@@ -31,7 +31,7 @@ pygame.init()
 fpsClock = pygame.time.Clock()
 windowSurfaceObj = pygame.display.set_mode( (640,480) )
 pygame.display.set_caption( 'Robot Remote Data Visualizer' )
-graphScale = 0.5 
+graphScale = 0.25 
 redColor = pygame.Color(255,0,0)
 whiteColor = pygame.Color(255,255,255)
 blackColor = pygame.Color(0,0,0)
@@ -42,7 +42,7 @@ lineQueue = deque()
 def ControlRobot( pos, waypoint ) :
     #print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     turn = TurnTowardsPoint( (pos[0],pos[1]), pos[2], waypoint)
-    speed = 10
+    speed = 5 
     return (turn[0] + speed, turn[1] + speed)
 
 # drawing loop
@@ -69,7 +69,7 @@ while True:
         print "command speeds", cmdSpds
         serialObj.write( CreateMotorSpeedMessage( cmdSpds[0], cmdSpds[1]))
         if( wp == (0,0)) : 
-            wayPointThreshold = 0
+            wayPointThreshold = wheelbase / 2
         else :
             wayPointThreshold = wheelbase
         if( Distance( (posAcc[0], posAcc[1]), wp) < wayPointThreshold ) :
@@ -79,7 +79,7 @@ while True:
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
                 testFinished = True
     else :
-        print "final position!"
+        print "final position: ", posAcc 
 
     ### draw the visualization
     # the background
@@ -93,7 +93,7 @@ while True:
     windowSurfaceObj.blit( msgSurfaceObj, msgRectObj)
 
     # draw the current waypoint
-    pygame.draw.circle( windowSurfaceObj, blueColor, (int(wp[0]*graphScale)+320, 240-int(wp[1]*graphScale)), int(wheelbase*graphScale), 0)
+    pygame.draw.circle( windowSurfaceObj, blueColor, (int(wp[0]*graphScale)+320, 240-int(wp[1]*graphScale)), int(wayPointThreshold*graphScale), 0)
 
     # draw all the lines
     A = (0,0)
