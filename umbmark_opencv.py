@@ -1,7 +1,7 @@
 import pygame, sys, time
 from pygame.locals import * # get some constants
 from collections import deque
-import cv
+import cv2
 
 # setup the robot stuff
 from robot_util import *
@@ -30,11 +30,11 @@ enc = (0,0)
 prevEnc = (0,0)
 
 # setup the opencv stuff
-cv.NamedWindow( "OpenCV Visualization", cv.CV_WINDOW_NORMAL)
-camera_index = 1
-captureObj = cv.CaptureFromCAM(camera_index)
-cv.SetCaptureProperty(captureObj, cv.CV_CAP_PROP_FRAME_WIDTH, 320)
-cv.SetCaptureProperty(captureObj, cv.CV_CAP_PROP_FRAME_HEIGHT, 240)
+cv2.namedWindow( "OpenCV Visualization", cv2.cv.CV_WINDOW_NORMAL)
+cameraIndex = 0 
+captureObj = cv2.VideoCapture(cameraIndex)
+captureObj.set( cv2.cv.CV_CAP_PROP_FRAME_WIDTH , 320 )
+captureObj.set( cv2.cv.CV_CAP_PROP_FRAME_HEIGHT , 240 )
 
 # setup the visualization stuff
 pygame.init()
@@ -93,15 +93,16 @@ while True:
         print "final position: ", posAcc 
     
     # draw the computer vision visualization
-    frameObj = cv.QueryFrame(captureObj)    # not sure _when_ I should be capturing this
-    cv.ShowImage("test?", frameObj)
+    (ret, frameObj) = captureObj.read()
+    if ret :
+        cv2.imshow("asdf", frameObj)
 
     ### draw the path visualization
     # the background
     windowSurfaceObj.fill( blackColor)
 
     # draw the text message
-    msgSurfaceObj = renderLines( [posMsg, pidMsg, scaleMsg, instMsg], fontObj, False, whiteColor)
+    msgSurfaceObj = renderLines( [posMsg, pidMsg, scaleMsg, instMsg, "press c to cycle cameras"], fontObj, False, whiteColor)
     #msgSurfaceObj = fontObj.render( msg, False, whiteColor)
     msgRectObj = msgSurfaceObj.get_rect()
     msgRectObj.topleft = (10,10)
@@ -153,10 +154,19 @@ while True:
                 testFinished = False
                 instMsg = "CCW test running..."
 
+            if event.key == K_c :   # try to cycle to the next camera
+                cameraIndex += 1
+                captureObj = cv2.VideoCapture(cameraIndex)
+                if not captureObj :
+                    cameraIndex = 0
+                    captureObj = cv2.VideoCapture(cameraIndex)
+                captureObj.set( cv2.cv.CV_CAP_PROP_FRAME_WIDTH , 320)
+                captureObj.set( cv2.cv.CV_CAP_PROP_FRAME_HEIGHT , 240 )
+
             #
 
     pygame.display.update() # draw everything
-    cv.WaitKey(10)  # draw the openCV window
+    cv2.waitKey(10)  # draw the openCV window
     #fpsClock.tick(30)   # regulate to 30 fps
 
 
