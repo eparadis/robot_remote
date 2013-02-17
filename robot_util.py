@@ -33,7 +33,7 @@ def CreatePIDTuningsMessage( (Kp, Ki, Kd) ) :
 def CreateMotorSpeedMessage( left, right ) :
     """return a string suitable for sending to the robot"""
     # again, don't forget the trailing space 
-    return "M " + str(left) + " " + str(right) + " "
+    return "M " + str(int(left)) + " " + str(int(right)) + " "
 
 def CreateEncoderZeroMessage() :
     """return a string suitable for sending to the robot"""
