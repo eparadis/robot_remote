@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, time
 from pygame.locals import * # get some constants
 from collections import deque
 
@@ -10,11 +10,13 @@ from renderlines import *   # a nice way to render multiline text off the pygame
 serialPort = sys.argv[1]
 #wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks, flat slick wheels 
 wheelbase = 95.0 * 162.5 / 170.0  # in encoder ticks, knobby round wheels
-squareSize = 800
+squareSize = 500
 wayPoints = [(0, squareSize), (squareSize, squareSize), (squareSize, 0), (0,0)]
 wayPoints.reverse() # we pop() the waypoints off, so reverse the order
 wp = wayPoints.pop()
-testFinished = False
+testFinished = True 
+instMsg = "Press 'l' or 'r' to start a CW or CCW test"
+wayPointThreshold = wheelbase
 
 print "doing setup..."
 serialObj = SetupComm()
@@ -42,7 +44,7 @@ lineQueue = deque()
 def ControlRobot( pos, waypoint ) :
     #print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     turn = TurnTowardsPoint( (pos[0],pos[1]), pos[2], waypoint)
-    speed = 5 
+    speed = 10
     return (turn[0] + speed, turn[1] + speed)
 
 # drawing loop
@@ -69,7 +71,7 @@ while True:
         print "command speeds", cmdSpds
         serialObj.write( CreateMotorSpeedMessage( cmdSpds[0], cmdSpds[1]))
         if( wp == (0,0)) : 
-            wayPointThreshold = wheelbase / 2
+            wayPointThreshold = wheelbase / 4 
         else :
             wayPointThreshold = wheelbase
         if( Distance( (posAcc[0], posAcc[1]), wp) < wayPointThreshold ) :
@@ -79,6 +81,7 @@ while True:
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
                 testFinished = True
     else :
+        instMsg = "Record data, move robot, zero encoders, then press 'r' or 'l' to do a CW or CCW test"
         print "final position: ", posAcc 
 
     ### draw the visualization
@@ -86,7 +89,7 @@ while True:
     windowSurfaceObj.fill( blackColor)
 
     # draw the text message
-    msgSurfaceObj = renderLines( [posMsg, pidMsg, scaleMsg], fontObj, False, whiteColor)
+    msgSurfaceObj = renderLines( [posMsg, pidMsg, scaleMsg, instMsg], fontObj, False, whiteColor)
     #msgSurfaceObj = fontObj.render( msg, False, whiteColor)
     msgRectObj = msgSurfaceObj.get_rect()
     msgRectObj.topleft = (10,10)
@@ -124,6 +127,19 @@ while True:
                 graphScale = graphScale / 2.0
             if event.key == K_EQUALS :
                 graphScale = graphScale * 2.0
+
+            if event.key == K_r and testFinished :
+                wayPoints = [(0, squareSize), (squareSize, squareSize), (squareSize, 0), (0,0)]
+                wayPoints.reverse() # we pop() the waypoints off, so reverse the order
+                wp = wayPoints.pop()
+                testFinished = False
+                instMsg = "CW test running..."
+            if event.key == K_l and testFinished :
+                wayPoints = [(0, squareSize), (0-squareSize, squareSize), (0-squareSize, 0), (0,0)]
+                wayPoints.reverse() # we pop() the waypoints off, so reverse the order
+                wp = wayPoints.pop()
+                testFinished = False
+                instMsg = "CCW test running..."
 
             #
 
