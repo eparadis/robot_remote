@@ -10,8 +10,9 @@ from renderlines import *   # a nice way to render multiline text off the pygame
 serialPort = sys.argv[1]
 #wheelbase = 99.0 * 16.0 / 15.6  # in encoder ticks, flat slick wheels 
 wheelbase = 95.0 * 162.5 / 170.0  # in encoder ticks, knobby round wheels
-squareSize = 200
-wayPoints = [(0, squareSize), (squareSize, squareSize), (squareSize, 0), (0,0)].reverse()   # we pop() the waypoints off, so reverse the order
+squareSize = 1000
+wayPoints = [(0, squareSize), (squareSize, squareSize), (squareSize, 0), (0,0)]
+wayPoints.reverse() # we pop() the waypoints off, so reverse the order
 wp = wayPoints.pop()
 testFinished = False
 
@@ -19,6 +20,7 @@ print "doing setup..."
 serialObj = SetupComm()
 kPID = (7.0, 64.0, 0.18)
 serialObj.write( CreatePIDTuningsMessage(kPID ))
+serialObj.write( CreateEncoderZeroMessage() )
 deltaPos = (0,0,0)
 posAcc = (0,0,0)
 enc = (0,0)
@@ -33,10 +35,11 @@ graphScale = 0.5
 redColor = pygame.Color(255,0,0)
 whiteColor = pygame.Color(255,255,255)
 blackColor = pygame.Color(0,0,0)
+blueColor = pygame.Color(0,0,255)
 fontObj = pygame.font.SysFont('arial', 16)
 lineQueue = deque()
 
-def ControlRobot( pos, waypoint )
+def ControlRobot( pos, waypoint ) :
     #print "nav " + str( TurnTowardsPoint( (posAcc[0],posAcc[1]), posAcc[2], waypoint))
     turn = TurnTowardsPoint( (pos[0],pos[1]), pos[2], waypoint)
     speed = 10
@@ -61,16 +64,21 @@ while True:
         lineQueue.popleft()
 
     # control the robot
-    if( !testFinished)
-        cmdSpds = ControlRobot( posAcc, wp) )
+    if( not testFinished) :
+        cmdSpds = ControlRobot( posAcc, wp) 
+        print "command speeds", cmdSpds
         serialObj.write( CreateMotorSpeedMessage( cmdSpds[0], cmdSpds[1]))
-        if( Distance( (posAcc[0], posAcc[1]), wp) < wheelbase )
-            if( len( wayPoints) > 0)
+        if( wp == (0,0)) : 
+            wayPointThreshold = 0
+        else :
+            wayPointThreshold = wheelbase
+        if( Distance( (posAcc[0], posAcc[1]), wp) < wayPointThreshold ) :
+            if( len( wayPoints) > 0) :
                 wp = wayPoints.pop()
-            else
+            else :
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
                 testFinished = True
-    else
+    else :
         print "final position!"
 
     ### draw the visualization
@@ -85,7 +93,7 @@ while True:
     windowSurfaceObj.blit( msgSurfaceObj, msgRectObj)
 
     # draw the current waypoint
-    pygame.draw.circle( windowSurfaceObj, blueColor, (wp[0]*graphScale, wp[1]*graphScale), wheelbase*graphScale, 0)
+    pygame.draw.circle( windowSurfaceObj, blueColor, (int(wp[0]*graphScale)+320, 240-int(wp[1]*graphScale)), int(wheelbase*graphScale), 0)
 
     # draw all the lines
     A = (0,0)
@@ -98,6 +106,7 @@ while True:
     for event in pygame.event.get() :
         if event.type == QUIT:
             print "SHUTTING DOWN..."
+            serialObj.write( CreateMotorSpeedMessage( 0, 0) )
             pygame.quit()
             sys.exit()
         elif event.type == KEYDOWN :
@@ -109,6 +118,7 @@ while True:
                 posAcc = (0,0,0)
             if event.key == K_SPACE :
                 serialObj.write( CreateMotorSpeedMessage( 0, 0))
+                testFinished = True
 
             if event.key == K_MINUS :
                 graphScale = graphScale / 2.0
