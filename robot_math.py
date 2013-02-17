@@ -27,13 +27,14 @@ def TurnTowardsPoint( curPos, curHeading, targetPos ) :
         turnRequired = turnRequired - 360.0
     if turnRequired < -180.0 :
         turnRequired = turnRequired + 360.0
+    speed = abs( turnRequired / 18.0)
     print "bearing: ", bearing, "turnReq: ", turnRequired
-    if( turnRequired < 5) :
-        return (-10.0, 10.0)
-    elif( turnRequired > 5) :
-        return (10.0, -10.0)
+    if( turnRequired < 1) :
+        return ( 0 - speed, speed)
+    elif( turnRequired > 1) :
+        return ( speed, 0 - speed)
     else :
-        return (0.0, 0.0)
+        return (speed, speed)
 
 def CalcPosAccumulator( curr, acc) :
     heading = curr[2]  
