@@ -30,7 +30,7 @@ enc = (0,0)
 prevEnc = (0,0)
 
 # setup the opencv stuff
-cv2.namedWindow( "OpenCV Visualization", cv2.cv.CV_WINDOW_NORMAL)
+#cv2.namedWindow( "OpenCV Visualization", cv2.cv.CV_WINDOW_NORMAL)
 cameraIndex = 0 
 captureObj = cv2.VideoCapture(cameraIndex)
 captureObj.set( cv2.cv.CV_CAP_PROP_FRAME_WIDTH , 320 )
@@ -54,6 +54,10 @@ def ControlRobot( pos, waypoint ) :
     turn = TurnTowardsPoint( (pos[0],pos[1]), pos[2], waypoint)
     speed = 10
     return (turn[0] + speed, turn[1] + speed)
+
+def MakeDataRecord( odoPos, imgFile) :
+    logfile = "datalog.txt"
+
 
 # drawing loop
 while True:
@@ -83,6 +87,13 @@ while True:
         else :
             wayPointThreshold = wheelbase
         if( Distance( (posAcc[0], posAcc[1]), wp) < wayPointThreshold ) :
+            (ret, frameObj) = captureObj.read()
+            if ret :
+                imageFilename = datetime.now().strftime("%Y%m%d-%H%M%S") + ".png"
+                cv2.imwrite(filename)
+            else :
+                imageFilename = ""
+            MakeDataRecord( posAcc, imageFilename)   # write log entry giving where the robot thought it was and the filename of an imagine showing where it actually was
             if( len( wayPoints) > 0) :
                 wp = wayPoints.pop()
             else :
@@ -95,7 +106,7 @@ while True:
     # draw the computer vision visualization
     (ret, frameObj) = captureObj.read()
     if ret :
-        cv2.imshow("asdf", frameObj)
+        cv2.imshow("Camera", frameObj)
 
     ### draw the path visualization
     # the background
