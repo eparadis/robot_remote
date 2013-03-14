@@ -1,5 +1,7 @@
 import sys
 import serial
+import string
+import subprocess
 
 def SetupComm( ) :
     ser = serial.Serial(sys.argv[1], 115200, timeout=2)
@@ -51,11 +53,11 @@ def GetPositionsFromLogEntry( line ) :
     odoPos = (0,0,0)    # X Y and Theta
     robotMarker = (0,0,0)   # X Y and Theta
     staticMarker = (0,0,0)  # X Y and Theta
-    # TODO grab the data from the given line
-    line = "1.0,1.0,5,20130308-231905.jpg" # example data
-    lineSplit = string.split(line, ',') 
+    # grab the data from the given line
+    #line = "1.0,1.0,5,20130308-231905.jpg" # example data
+    lineSplit = line.split(',') 
     odoPos = (lineSplit[0], lineSplit[1], lineSplit[2])
-    # TODO call ArUco
+    # call ArUco
     aruco = '/Users/ed/src/opencv/build/aruco-1.2.4/build/utils/aruco_simple'
     image = '/Users/ed/git/robot_remote/test_frames/' + lineSplit[3]
     cal = '/Users/ed/git/robot_remote/htc_one_cal/cal.yml'
@@ -71,9 +73,9 @@ def GetPositionsFromLogEntry( line ) :
             
             # parse the markers of interest
             # call a function to transform/project the Txyz,Rxyz data from a marker to the plane X,Y,Theta of the robot positioning code
-            if( markerID == 290)
+            if( int(markerID) == 290) :
                 staticMarker = InverseProjection( T, R)
-            if( markerID == 678)
+            if( int(markerID) == 678) :
                 robotMarket = InverseProjection( T, R)
     # return the properly transformed data
     return (odoPos, robotMarker, staticMarker)
@@ -95,6 +97,5 @@ def CalculateUMBMarkCorrections( cwOffset, ccwOffset, sideLength ) :
     R = (sideLength/2) / math.sin(math.radians(beta/2))
     E_d = (R + beta / 2) / (R - beta / 2)
     return ( E_b, E_d)
-
 
 
