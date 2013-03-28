@@ -2,6 +2,8 @@ import sys
 import serial
 import string
 import subprocess
+from robot_math import *
+from euclid import *
 
 def SetupComm( ) :
     ser = serial.Serial(sys.argv[1], 115200, timeout=2)
@@ -11,10 +13,10 @@ def SetupComm( ) :
     while count < 6 :
         line = ser.readline().rstrip()
         data = ParseStatusMessage(line)
-        print data
+        print "DEBUG: data = ", data
         if len(data) >= 2 :
             count = count + 1
-            print "snarf"
+            print "DEBUG: snarf"
     return ser
 
 def ParseStatusMessage( line ) :
@@ -49,14 +51,16 @@ def MakeDataRecord( odoPos, imgFile) :
     # TODO write to the file
 
 def GetPositionsFromLogEntry( line ) :
-    """given a line from the CSV logfile, call the ArUco image processor and return the positions of the static marker, the robot marker, and the robot's position as a list of tuples"""
+    """given a line from the CSV logfile, call the ArUco image processor and return the position of the robot marker and robot's
+    position according to odometry.  The robot marker position is given as a pair of tuples, translation and rotation in the frame
+    of the static/ground marker."""
     odoPos = (0,0,0)    # X Y and Theta
-    robotMarker = (0,0,0)   # X Y and Theta
-    staticMarker = (0,0,0)  # X Y and Theta
+    robotTR = ((0,0,0),(0,0,0))   # (T, R)
+    groundTR = ((0,0,0),(0,0,0))   # (T, R)
     # grab the data from the given line
     #line = "1.0,1.0,5,20130308-231905.jpg" # example data
     lineSplit = line.split(',') 
-    odoPos = (lineSplit[0], lineSplit[1], lineSplit[2])
+    odoPos = (float(lineSplit[0]), float(lineSplit[1]), float(lineSplit[2]))
     # call ArUco
     aruco = '/Users/ed/src/opencv/build/aruco-1.2.4/build/utils/aruco_simple'
     image = '/Users/ed/git/robot_remote/test_frames/' + lineSplit[3]
@@ -66,19 +70,20 @@ def GetPositionsFromLogEntry( line ) :
     for r in response:
         sp = r.split(',')
         if(len(sp) >= 14) :
-            markerID = sp[0]
-            T = (sp[9], sp[10], sp[11])
-            R = (sp[12], sp[13], sp[14])
-            print "marker ",markerID," at T",T," R",R 
+            markerID = int(sp[0])
+            T = (float(sp[9]), float(sp[10]), float(sp[11]))
+            R = (float(sp[12]), float(sp[13]), float(sp[14]))
+            print "DEBUG: marker ",markerID," at T",T," R",R 
             
             # parse the markers of interest
             # call a function to transform/project the Txyz,Rxyz data from a marker to the plane X,Y,Theta of the robot positioning code
-            if( int(markerID) == 290) :
-                staticMarker = InverseProjection( T, R)
-            if( int(markerID) == 678) :
-                robotMarket = InverseProjection( T, R)
+            if( markerID == 290) :
+                groundTR = (T,R)
+            if( markerID == 678) :
+                robotTR = (T,R)
     # return the properly transformed data
-    return (odoPos, robotMarker, staticMarker)
+    robotMarkerPos = CalcPositionFromMarkers( robotTR, groundTR)
+    return (odoPos, robotMarkerPos)
 
 def MeasurePositionOffset( (odoPos, robotMarker, staticMarker) ) :
     """given the positions of the robotMarker and the staticMarker, calculate where the robot is located..."""
