@@ -64,7 +64,8 @@ def GetPositionsFromLogEntry( line ) :
     # call ArUco
     aruco = '/Users/ed/src/opencv/build/aruco-1.2.4/build/utils/aruco_simple'
     image = '/Users/ed/git/robot_remote/test_frames/' + lineSplit[3]
-    cal = '/Users/ed/git/robot_remote/htc_one_cal/cal.yml'
+    #cal = '/Users/ed/git/robot_remote/htc_one_cal/cal.yml'
+    cal = '/Users/ed/src/opencv/build/logitech_640.yml'
     size = '3.622' # side of marker in inches, only counting the black part
     response = subprocess.check_output([aruco, image, cal, size]).splitlines()
     for r in response:
