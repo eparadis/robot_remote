@@ -1,5 +1,6 @@
 # some functions to do some math
 import math
+from euclid import *
 
 def CalcPosition( left_enc, right_enc, wheel_base, curr_rot ) :
     """give encoder ticks and the robot's wheel base, return X Y position and heading in degrees
@@ -54,7 +55,7 @@ def InverseProjection( Vt, Vr ) :
     R = 0
     return (X, Y, R)
 
-def CalcPositionFromMarkers( robotTR, groundTR)
+def CalcPositionFromMarkers( robotTR, groundTR):
     # matR = robot frame in reference to camera frame
     matR = Matrix4.new_translate(*robotTR[0]).rotate_euler(*robotTR[1])
     # matW = world/ground marker in refernce to camera frame
