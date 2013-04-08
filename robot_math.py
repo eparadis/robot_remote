@@ -48,27 +48,36 @@ def CalcPosAccumulator( curr, acc) :
 def Distance( pos, waypoint) :
     return math.sqrt( math.pow((pos[0]-waypoint[0]),2) + math.pow(pos[1]-waypoint[1],2))
 
-def InverseProjection( Vt, Vr ) :
-    """TODO given a translation and rotation vector, calculate position and orientation on a horizontal plane"""
-    X = 0
-    Y = 0
-    R = 0
-    return (X, Y, R)
+#def InverseProjection( Vt, Vr ) :
+#    """TODO given a translation and rotation vector, calculate position and orientation on a horizontal plane"""
+#    X = 0
+#    Y = 0
+#    R = 0
+#    return (X, Y, R)
 
 def CalcPositionFromMarkers( robotTR, groundTR):
     # matR = robot frame in reference to camera frame
-    matR = Matrix4.new_translate(*robotTR[0]).rotate_euler(*robotTR[1])
+    matR = Matrix4.new_identity()
+    matR.translate(*robotTR[0])
+    matRq = Quaternion(*robotTR[1]).get_matrix()
+    matR = matR * matRq
     # matW = world/ground marker in refernce to camera frame
-    matW = Matrix4.new_translate(*groundTR[0]).rotate_euler(*groundTR[1])
+    matW = Matrix4.new_identity()
+    matW.translate(*groundTR[0])
+    matWq = Quaternion(*groundTR[1]).get_matrix()
+    matW = matW * matWq
     # matX = robot frame in refernce to world/ground frame
     matX = matW.inverse() * matR
-    robotPos = Ray3(Point3(0,0,0), Vector3(0,1,0)) # the robot thinks its at origin facing up the Y-axis
+    robotPos = Ray3(Point3(0,0,0), Vector3(1,0,0)) # the robot thinks its at origin and aligned with x-axis of marker
     r = matX*robotPos # robot position
-    zRot = 90 - math.degrees(math.atan2(r.v[1], r.v[0])) # we do robot 'rotation' a little weird, so handle that and clamp values
+    #print "DEBUG robot marker height", r.p[2] 
+    zRot = 90 - math.degrees(math.atan2(r.v[1], r.v[0])) # we do robot 'rotation' a little weird, 
+                                                         # so handle that and clamp values
+                                                         # also note marker axes may be goofy depending on CV processing 
     if zRot > 180:
         zRot -= 360
     if zRot < -180:
         zRot += 360
     #print "pos X Y R ", r.p[0], r.p[1], zRot
-    return (r.p[0], r.p[1], zRot)
+    return ( r.p[0], r.p[1], zRot)  
 

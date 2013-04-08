@@ -69,12 +69,12 @@ def GetPositionsFromLogEntry( line ) :
     size = '3.622' # side of marker in inches, only counting the black part
     response = subprocess.check_output([aruco, image, cal, size]).splitlines()
     for r in response:
-        sp = r.split(',')
-        if(len(sp) >= 14) :
+        sp = r.split()
+        if(len(sp) >= 8) :
             markerID = int(sp[0])
-            T = (float(sp[9]), float(sp[10]), float(sp[11]))
-            R = (float(sp[12]), float(sp[13]), float(sp[14]))
-            print "DEBUG: marker ",markerID," at T",T," R",R 
+            T = (float(sp[1]), float(sp[2]), float(sp[3]) )
+            R = (float(sp[4]), float(sp[5]), float(sp[6]), float(sp[7]) )
+            #print "DEBUG: marker ",markerID," at T",T," R",R 
             
             # parse the markers of interest
             # call a function to transform/project the Txyz,Rxyz data from a marker to the plane X,Y,Theta of the robot positioning code
