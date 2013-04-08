@@ -1,0 +1,30 @@
+# we're only looking at two markers, though the image show four
+# the ground marker is considered '0 0 0deg'
+#  its in the center set and we're concerned with marker 290
+#  that's the one on the left, way from the cardboard-colored corner
+# the robot marker is the position we're trying to measure
+#  is the one that moves around in the frame
+#  the marker we are concerned with is 678
+#  that's the one near the strip of uncovered cardboard
+# for scale, the black border of the markers are 3.6 inches
+# the wood flooring is 4.75"
+# because the X and Y positions were guessed after the fact, the rotations
+#  are probably the only really solid measurement here
+
+# filename          Xpos  Ypos rotation
+20130407-010610.jpg -17.5 0    0
+20130407-010620.jpg -17.5 0    90
+20130407-010712.jpg 17.5  0    0
+20130407-010734.jpg 4.8   -10  0
+20130407-010745.jpg 4.8   -10  90
+20130407-010759.jpg -13.9 -7.1 0
+20130407-010806.jpg -12.6 -9.5 45
+20130407-010811.jpg -12.6 -7.1 90
+20130407-010816.jpg -12.6 -9.5 135
+20130407-010821.jpg -12.6 -11.9 180
+20130407-010826.jpg -16.7 -11.4 -135
+20130407-010830.jpg -16.3 -9.5 -90
+20130407-010834.jpg -16.0 -7.6 -45
+
+# why i moved the marker where i moved it, i have no idea
+
