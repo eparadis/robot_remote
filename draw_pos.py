@@ -1,4 +1,7 @@
-import pygame, sys
+import sys
+sys.path.append( 'lib')
+
+import pygame
 from pygame.locals import * # get some constants
 from collections import deque
 

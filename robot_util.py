@@ -1,4 +1,5 @@
 import sys
+sys.path.append( 'lib')
 import serial
 import string
 import subprocess

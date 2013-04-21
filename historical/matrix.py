@@ -1,3 +1,5 @@
+import sys
+sys.path.append( 'lib')
 from euclid import *
 import math
 
