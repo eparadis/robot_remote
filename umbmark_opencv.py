@@ -1,4 +1,6 @@
-import pygame, sys, time
+import sys
+sys.path.append( 'lib')
+import pygame, time
 from pygame.locals import * # get some constants
 from collections import deque
 import cv2
